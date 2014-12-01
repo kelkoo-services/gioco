@@ -7,18 +7,16 @@ describe Gioco do
   let(:medium_badge) { Badge.find_by_name "medium" }
 
   context "Get a new resource and add and remove points to it" do
-
-    it "should have nil as value of points" do
-      user.points.should == []
+    it "should have 0 as value of points" do
+      user.points.should == 0
     end
 
     context "Incressing points to an user win noob badge of kind comment" do
-
       it "Add the noob badge and the points related to an user" do
         user.change_points(points: noob_badge.points, kind: kind.id)
         user.reload
         user.badges.should include noob_badge
-        user.points.where(:kind_id => kind.id).sum(:value) == noob_badge.points
+        user.points(kind: kind.id) == noob_badge.points
       end
 
       it "Add points related to a user's kind, using single increases" do
@@ -26,7 +24,7 @@ describe Gioco do
         final_score.times do
           user.change_points(points: 1, kind: kind.id)
         end
-        user.points.where(:kind_id => kind.id).sum(:value).should == final_score
+        user.points(kind: kind.id).should == final_score
       end
 
       it "Remove points related to a user's kind, using single decreases" do
@@ -36,7 +34,7 @@ describe Gioco do
         (initial_score - final_score).times do
           user.change_points(points: -1, kind: kind.id)
         end
-        user.points.where(:kind_id => kind.id).sum(:value).should == final_score
+        user.points(kind: kind.id).should == final_score
       end
     end
 
@@ -50,7 +48,7 @@ describe Gioco do
         user.change_points(points: - medium_badge.points, kind: kind.id)
         user.reload
         user.badges.should_not include medium_badge
-        user.points.where(:kind_id => kind.id).sum(:value) == 0
+        user.points(kind: kind.id) == 0
       end
     end
   end
@@ -67,8 +65,8 @@ describe Gioco do
     it "should return a hash with the info for the medium_badge" do
       noob_badge.add user.id
       user.next_badge?(kind.id).should == { :badge=> medium_badge,
-                                            :points=> medium_badge.points - user.points.sum(:value),
-                                            :percentage=>(user.points.sum(:value) - user.badges.last.points)*100/(medium_badge.points - user.badges.last.points)
+                                            :points=> medium_badge.points - user.points(kind: kind.id),
+                                            :percentage=>(user.points(kind: kind.id) - user.badges.last.points)*100/(medium_badge.points - user.badges.last.points)
                                           }
     end
   end

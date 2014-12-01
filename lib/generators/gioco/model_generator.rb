@@ -2,7 +2,6 @@ module ModelGenerator
   def generate_models
     generate("model", "level badge_id:integer #{@model_name}_id:integer")
     if options[:kinds]
-      generate("model", "point user_id:integer kind_id:integer value:integer")
       generate("model", "kind name:string")
       generate("model", "badge name:string kind_id:integer  #{(options[:points]) ? "points:integer" : ""} default:boolean")
     else
@@ -27,7 +26,7 @@ module ModelGenerator
   def setup_relations
     add_relationship("badge", "levels", "has_many", false, "destroy")
     add_relationship("badge", @model_name.pluralize, "has_many", "levels")
-    
+
     add_relationship(@model_name, "levels", "has_many")
     add_relationship(@model_name, "badges", "has_many", "levels")
 
@@ -36,11 +35,8 @@ module ModelGenerator
 
     if options[:kinds]
       add_relationship(@model_name, "points", "has_many")
-      add_relationship("kind", "points", "has_many")
       add_relationship("kind", "badges", "has_many")
       add_relationship("badge", "kind", "belongs_to")
-      add_relationship("point", @model_name, "belongs_to")
-      add_relationship("point", "kind", "belongs_to")
     end
   end
 
