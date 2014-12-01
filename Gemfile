@@ -9,5 +9,5 @@ group :development, :test do
   gem 'factory_girl_rails', '4.2.1'
   gem 'coveralls', require: false
   gem 'sqlite3'
+  gem 'redis'
 end
-

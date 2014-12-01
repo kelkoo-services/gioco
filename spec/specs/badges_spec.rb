@@ -8,22 +8,17 @@ describe Gioco do
   let(:hard_badge) { Badge.find_by_name "hard" }
 
   describe "Get a new resource and add and remove badges to it" do
-
     context "Adding a badge to an user" do
-
       it "Add the noob badge and the points related to an user" do
         noob_badge.add(user.id)
         user.reload
         user.badges.should include noob_badge
-        user.points.where(:kind_id => kind.id).sum(:value) == noob_badge.points
+        user.points(kind: kind.id) == noob_badge.points
       end
-
     end
 
     context "Removing a badge to an user" do
-
       before(:each) do
-        Point.destroy_all
         noob_badge.add(user.id)
         hard_badge.add(user.id)
       end
@@ -32,11 +27,8 @@ describe Gioco do
         hard_badge.remove(user.id)
         user.reload
         user.badges.should_not include hard_badge
-        user.points.where(:kind_id => kind.id).sum(:value) == medium_badge.points
+        user.points(kind: kind.id) == medium_badge.points
       end
-
     end
-
   end
-
 end
